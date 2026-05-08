@@ -1,0 +1,7 @@
+begin
+    int a
+    int b
+    a := 10
+    b := (a - 2) * (a - 3)
+    write b
+end

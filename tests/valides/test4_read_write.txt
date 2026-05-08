@@ -1,0 +1,9 @@
+begin
+    int x
+    int y
+    read(x)
+    read(y)
+    write x
+    write y
+    write x - y
+end

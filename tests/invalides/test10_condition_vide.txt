@@ -1,0 +1,7 @@
+begin
+    int x
+    x := 5
+    while () do
+        write x
+    od
+end
