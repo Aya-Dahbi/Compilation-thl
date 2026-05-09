@@ -1,0 +1,8 @@
+begin
+    int x
+    x 10
+    read x
+    while (x > 0)
+        write x
+        x := x * 2 @
+    end
