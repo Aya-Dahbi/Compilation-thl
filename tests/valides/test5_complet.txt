@@ -1,0 +1,13 @@
+begin
+    int a
+    int b
+    int res
+    read(a)
+    read(b)
+    res := a - b
+    while (res > 0) do
+        write res
+        res := res - 1
+    od
+    write res
+end

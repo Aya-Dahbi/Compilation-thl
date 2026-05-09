@@ -1,0 +1,5 @@
+begin
+    int x
+    int y
+    int z
+end

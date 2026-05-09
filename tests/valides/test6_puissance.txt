@@ -1,0 +1,7 @@
+begin
+    int x
+    int y
+    x := 2
+    y := x ^ 3
+    write y
+end
