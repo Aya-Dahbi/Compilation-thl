@@ -1,0 +1,19 @@
+begin
+    int x
+    int y
+    int resultat
+
+    read(x)
+    read(y)
+
+    resultat := x - y
+
+    while (resultat > 0) do
+        write resultat
+        resultat := resultat - 1
+    od
+
+    write x * y
+    write (x - 2) * (y - 3)
+    write x ^ 2
+end
