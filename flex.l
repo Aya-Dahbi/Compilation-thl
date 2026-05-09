@@ -1,8 +1,8 @@
 %{
 #include "parser.tab.h"
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 %}
 
 %option noyywrap
@@ -13,62 +13,58 @@ DIGIT       [0-9]
 
 IDF         {LETTER}({LETTER}|{DIGIT})*
 NUMBER      {DIGIT}+
-
-WHITESPACE  [ \t\n]+
+WHITESPACE  [ \t\r\n]+
 
 %%
 
-"begin"        { return BEGIN_KW; }
-"end"          { return END_KW; }
+"begin"     { return BEGIN_KW; }
+"end"       { return END_KW; }
 
-"int"          { return INT_KW; }
+"int"       { return INT_KW; }
 
-"write"        { return WRITE_KW; }
-"read"         { return READ_KW; }
+"write"     { return WRITE_KW; }
+"read"      { return READ_KW; }
 
-"while"        { return WHILE_KW; }
-"do"           { return DO_KW; }
-"od"           { return OD_KW; }
+"while"     { return WHILE_KW; }
+"do"        { return DO_KW; }
+"od"        { return OD_KW; }
 
-{IDF}
-{
-    yylval.str = strdup(yytext);
-    return ID;
-}
+":="        { return ASSIGN; }
 
-{NUMBER}
-{
-    yylval.num = atoi(yytext);
-    return NUM;
-}
+">="        { return GTE; }
+"<="        { return LTE; }
+"!="        { return NEQ; }
+"=="        { return EQ; }
 
-":="           { return ASSIGN; }
+">"         { return GT; }
+"<"         { return LT; }
 
-"-"            { return MINUS; }
-"*"            { return TIMES; }
-"/"            { return DIV;   }
-"%"            { return MOD;   }
-"^"            { return POW;   }
+"-"         { return MINUS; }
+"*"         { return TIMES; }
+"/"         { return DIV; }
+"%"         { return MOD; }
+"^"         { return POW; }
 
-">="           { return GTE; }
-"<="           { return LTE; }
-"!="           { return NEQ; }
-"=="           { return EQ;  }
+"("         { return LPAREN; }
+")"         { return RPAREN; }
 
-">"            { return GT;  }
-"<"            { return LT;  }
+{NUMBER}    {
+                yylval.num = atoi(yytext);
+                return NUM;
+            }
 
-"("            { return LPAREN; }
-")"            { return RPAREN; }
+{IDF}       {
+                yylval.str = strdup(yytext);
+                return ID;
+            }
 
-{WHITESPACE}   { }
+{WHITESPACE}  { }
 
-.
-{
-    fprintf(stderr,
-            "Erreur lexicale ligne %d : caractere inconnu '%s'\n",
-            yylineno,
-            yytext);
-}
+.           {
+                fprintf(stderr,
+                        "Erreur lexicale ligne %d : caractere inconnu '%s'\n",
+                        yylineno,
+                        yytext);
+            }
 
 %%
