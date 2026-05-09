@@ -9,8 +9,6 @@ extern char* yytext;
 void yyerror(const char *s);
 %}
 
-%define parse.error verbose
-
 %union {
     int num;
     char* str;
@@ -34,24 +32,54 @@ void yyerror(const char *s);
 
 program:
     BEGIN_KW listinstr END_KW
+    | error END_KW
+    {
+        fprintf(stderr, "[ERREUR] Ligne %d : 'begin' manquant\n", yylineno);
+        yyerrok;
+    }
+    | BEGIN_KW listinstr
+    {
+        fprintf(stderr, "[ERREUR] Ligne %d : 'end' manquant\n", yylineno);
+        yyerrok;
+    }
     ;
 
-/* Respect de la recursivite droite de l'enonce */
 listinstr:
     instr listinstr
     | instr
+    | error listinstr
+    {
+        fprintf(stderr, "[ERREUR] Ligne %d : instruction invalide\n", yylineno);
+        yyerrok;
+    }
     ;
 
 instr:
     INT_KW ID
     | ID ASSIGN expr
+    | ID error expr
+    {
+        fprintf(stderr, "[ERREUR] Ligne %d : ':=' manquant apres '%s'\n", yylineno, $1);
+        yyerrok;
+    }
     | WRITE_KW expr
     | READ_KW LPAREN ID RPAREN
+    | READ_KW ID
+    {
+        fprintf(stderr, "[ERREUR] Ligne %d : parentheses manquantes → ecrivez read(%s)\n", yylineno, $2);
+        yyerrok;
+    }
     | WHILE_KW LPAREN cond RPAREN DO_KW listinstr OD_KW
-    | error { 
-        fprintf(stderr, "--> Tentative de reprise de l'analyse apres l'erreur.\n");
-        yyerrok; 
-      }
+    | WHILE_KW LPAREN cond RPAREN listinstr OD_KW
+    {
+        fprintf(stderr, "[ERREUR] Ligne %d : 'do' manquant apres la condition\n", yylineno);
+        yyerrok;
+    }
+    | WHILE_KW LPAREN cond RPAREN DO_KW listinstr
+    {
+        fprintf(stderr, "[ERREUR] Ligne %d : 'od' manquant\n", yylineno);
+        yyerrok;
+    }
     ;
 
 expr:
@@ -70,26 +98,21 @@ cond:
     ;
 
 condsymb:
-    GT 
-    | LT 
-    | GTE 
-    | LTE 
-    | NEQ 
-    | EQ
+    GT | LT | GTE | LTE | NEQ | EQ
     ;
 
 %%
 
 void yyerror(const char *s) {
-    fprintf(stderr, "\n[ERREUR SYNTAXIQUE] Ligne %d : %s (symbole problematique : '%s')\n", yylineno, s, yytext);
+    fprintf(stderr, "[ERREUR] Ligne %d : %s (proche de '%s')\n",
+            yylineno, s, yytext);
 }
 
 int main(void) {
-    printf("Demarrage du Compilateur\n");
     if (yyparse() == 0) {
-        printf("\n=> SUCCES ! Analyse terminee, aucune erreur syntaxique detectee.\n");
+        printf("SUCCES : programme valide.\n");
     } else {
-        printf("\n=> ECHEC ! L'analyse a echoue en raison des erreurs ci-dessus.\n");
+        printf("ECHEC : programme invalide.\n");
     }
     return 0;
 }
