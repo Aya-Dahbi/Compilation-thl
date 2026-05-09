@@ -2,8 +2,8 @@ begin
     int a
     int b
     int c
-    a := 10
-    b := 3
-    c := a - b * 2
+    a := 15
+    b := 2
+    c := a - b * 5
     write c
 end
