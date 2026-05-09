@@ -1,5 +1,6 @@
 %{
 #include "parser.tab.h"
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 %}
@@ -7,39 +8,67 @@
 %option noyywrap
 %option yylineno
 
+LETTER      [a-zA-Z]
+DIGIT       [0-9]
+
+IDF         {LETTER}({LETTER}|{DIGIT})*
+NUMBER      {DIGIT}+
+
+WHITESPACE  [ \t\n]+
+
 %%
 
-"begin"   { return BEGIN_KW; }
-"end"     { return END_KW;   }
-"int"     { return INT_KW;   }
-"write"   { return WRITE_KW; }
-"read"    { return READ_KW;  }
-"while"   { return WHILE_KW; }
-"do"      { return DO_KW;    }
-"od"      { return OD_KW;    }
+"begin"        { return BEGIN_KW; }
+"end"          { return END_KW; }
 
-[a-zA-Z][a-zA-Z0-9]*  { yylval.str = strdup(yytext); return ID;  }
-[0-9]+                 { yylval.num = atoi(yytext);   return NUM; }
+"int"          { return INT_KW; }
 
-":="  { return ASSIGN; }
-"-"   { return MINUS;  }
-"*"   { return TIMES;  }
-"/"   { return DIV;    }
-"%"   { return MOD;    }
-"^"   { return POW;    }
+"write"        { return WRITE_KW; }
+"read"         { return READ_KW; }
 
-">="  { return GTE; }
-"<="  { return LTE; }
-"!="  { return NEQ; }
-"=="  { return EQ;  }
-">"   { return GT;  }
-"<"   { return LT;  }
+"while"        { return WHILE_KW; }
+"do"           { return DO_KW; }
+"od"           { return OD_KW; }
 
-"("   { return LPAREN; }
-")"   { return RPAREN; }
+{IDF}
+{
+    yylval.str = strdup(yytext);
+    return ID;
+}
 
-[ \t\n]  { /* ignorer */ }
+{NUMBER}
+{
+    yylval.num = atoi(yytext);
+    return NUM;
+}
 
-.  { fprintf(stderr, "Erreur ligne %d : caractere inconnu '%s'\n", yylineno, yytext); }
+":="           { return ASSIGN; }
+
+"-"            { return MINUS; }
+"*"            { return TIMES; }
+"/"            { return DIV;   }
+"%"            { return MOD;   }
+"^"            { return POW;   }
+
+">="           { return GTE; }
+"<="           { return LTE; }
+"!="           { return NEQ; }
+"=="           { return EQ;  }
+
+">"            { return GT;  }
+"<"            { return LT;  }
+
+"("            { return LPAREN; }
+")"            { return RPAREN; }
+
+{WHITESPACE}   { }
+
+.
+{
+    fprintf(stderr,
+            "Erreur lexicale ligne %d : caractere inconnu '%s'\n",
+            yylineno,
+            yytext);
+}
 
 %%
