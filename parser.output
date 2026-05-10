@@ -1,0 +1,873 @@
+Grammaire
+
+    0 $accept: program $end
+
+    1 program: optional_newlines BEGIN_KW NEWLINE listinstr END_KW optional_newlines
+
+    2 optional_newlines: /* vide */
+    3                  | optional_newlines NEWLINE
+
+    4 listinstr: listinstr statement
+    5          | statement
+
+    6 statement: instr NEWLINE
+    7          | NEWLINE
+    8          | error NEWLINE
+
+    9 instr: declaration
+   10      | affectation
+   11      | lecture
+   12      | ecriture
+   13      | boucle
+
+   14 declaration: INT_KW ID
+
+   15 affectation: ID ASSIGN expr
+
+   16 lecture: READ_KW LPAREN ID RPAREN
+
+   17 ecriture: WRITE_KW expr
+
+   18 boucle: WHILE_KW LPAREN cond RPAREN DO_KW NEWLINE listinstr OD_KW
+
+   19 expr: expr PLUS expr
+   20     | expr MINUS expr
+   21     | expr MUL expr
+   22     | expr DIV expr
+   23     | expr MOD expr
+   24     | expr POW expr
+   25     | MINUS expr
+   26     | LPAREN expr RPAREN
+   27     | ID
+   28     | NUM
+
+   29 cond: expr condsymb expr
+
+   30 condsymb: GT
+   31         | LT
+   32         | GE
+   33         | LE
+   34         | EQ
+   35         | NE
+   36         | STRICT_EQ
+
+
+Terminaux, suivis des règles où ils apparaissent
+
+$end (0) 0
+error (256) 8
+BEGIN_KW (258) 1
+END_KW (259) 1
+INT_KW (260) 14
+READ_KW (261) 16
+WRITE_KW (262) 17
+WHILE_KW (263) 18
+DO_KW (264) 18
+OD_KW (265) 18
+ID (266) 14 15 16 27
+NUM (267) 28
+ASSIGN (268) 15
+PLUS (269) 19
+MINUS (270) 20 25
+MUL (271) 21
+DIV (272) 22
+MOD (273) 23
+POW (274) 24
+GT (275) 30
+LT (276) 31
+GE (277) 32
+LE (278) 33
+EQ (279) 34
+NE (280) 35
+STRICT_EQ (281) 36
+LPAREN (282) 16 18 26
+RPAREN (283) 16 18 26
+NEWLINE (284) 1 3 6 7 8 18
+UMINUS (285)
+
+
+Non-terminaux, suivis des règles où ils apparaissent
+
+$accept (31)
+    à gauche: 0
+program (32)
+    à gauche: 1, à droite: 0
+optional_newlines (33)
+    à gauche: 2 3, à droite: 1 3
+listinstr (34)
+    à gauche: 4 5, à droite: 1 4 18
+statement (35)
+    à gauche: 6 7 8, à droite: 4 5
+instr (36)
+    à gauche: 9 10 11 12 13, à droite: 6
+declaration (37)
+    à gauche: 14, à droite: 9
+affectation (38)
+    à gauche: 15, à droite: 10
+lecture (39)
+    à gauche: 16, à droite: 11
+ecriture (40)
+    à gauche: 17, à droite: 12
+boucle (41)
+    à gauche: 18, à droite: 13
+expr (42)
+    à gauche: 19 20 21 22 23 24 25 26 27 28, à droite: 15 17 19 20
+    21 22 23 24 25 26 29
+cond (43)
+    à gauche: 29, à droite: 18
+condsymb (44)
+    à gauche: 30 31 32 33 34 35 36, à droite: 29
+
+
+état 0
+
+    0 $accept: . program $end
+
+    $défaut  réduction par utilisation de la règle 2 (optional_newlines)
+
+    program            aller à l'état 1
+    optional_newlines  aller à l'état 2
+
+
+état 1
+
+    0 $accept: program . $end
+
+    $end  décalage et aller à l'état 3
+
+
+état 2
+
+    1 program: optional_newlines . BEGIN_KW NEWLINE listinstr END_KW optional_newlines
+    3 optional_newlines: optional_newlines . NEWLINE
+
+    BEGIN_KW  décalage et aller à l'état 4
+    NEWLINE   décalage et aller à l'état 5
+
+
+état 3
+
+    0 $accept: program $end .
+
+    $défaut  accepter
+
+
+état 4
+
+    1 program: optional_newlines BEGIN_KW . NEWLINE listinstr END_KW optional_newlines
+
+    NEWLINE  décalage et aller à l'état 6
+
+
+état 5
+
+    3 optional_newlines: optional_newlines NEWLINE .
+
+    $défaut  réduction par utilisation de la règle 3 (optional_newlines)
+
+
+état 6
+
+    1 program: optional_newlines BEGIN_KW NEWLINE . listinstr END_KW optional_newlines
+
+    error     décalage et aller à l'état 7
+    INT_KW    décalage et aller à l'état 8
+    READ_KW   décalage et aller à l'état 9
+    WRITE_KW  décalage et aller à l'état 10
+    WHILE_KW  décalage et aller à l'état 11
+    ID        décalage et aller à l'état 12
+    NEWLINE   décalage et aller à l'état 13
+
+    listinstr    aller à l'état 14
+    statement    aller à l'état 15
+    instr        aller à l'état 16
+    declaration  aller à l'état 17
+    affectation  aller à l'état 18
+    lecture      aller à l'état 19
+    ecriture     aller à l'état 20
+    boucle       aller à l'état 21
+
+
+état 7
+
+    8 statement: error . NEWLINE
+
+    NEWLINE  décalage et aller à l'état 22
+
+
+état 8
+
+   14 declaration: INT_KW . ID
+
+    ID  décalage et aller à l'état 23
+
+
+état 9
+
+   16 lecture: READ_KW . LPAREN ID RPAREN
+
+    LPAREN  décalage et aller à l'état 24
+
+
+état 10
+
+   17 ecriture: WRITE_KW . expr
+
+    ID      décalage et aller à l'état 25
+    NUM     décalage et aller à l'état 26
+    MINUS   décalage et aller à l'état 27
+    LPAREN  décalage et aller à l'état 28
+
+    expr  aller à l'état 29
+
+
+état 11
+
+   18 boucle: WHILE_KW . LPAREN cond RPAREN DO_KW NEWLINE listinstr OD_KW
+
+    LPAREN  décalage et aller à l'état 30
+
+
+état 12
+
+   15 affectation: ID . ASSIGN expr
+
+    ASSIGN  décalage et aller à l'état 31
+
+
+état 13
+
+    7 statement: NEWLINE .
+
+    $défaut  réduction par utilisation de la règle 7 (statement)
+
+
+état 14
+
+    1 program: optional_newlines BEGIN_KW NEWLINE listinstr . END_KW optional_newlines
+    4 listinstr: listinstr . statement
+
+    error     décalage et aller à l'état 7
+    END_KW    décalage et aller à l'état 32
+    INT_KW    décalage et aller à l'état 8
+    READ_KW   décalage et aller à l'état 9
+    WRITE_KW  décalage et aller à l'état 10
+    WHILE_KW  décalage et aller à l'état 11
+    ID        décalage et aller à l'état 12
+    NEWLINE   décalage et aller à l'état 13
+
+    statement    aller à l'état 33
+    instr        aller à l'état 16
+    declaration  aller à l'état 17
+    affectation  aller à l'état 18
+    lecture      aller à l'état 19
+    ecriture     aller à l'état 20
+    boucle       aller à l'état 21
+
+
+état 15
+
+    5 listinstr: statement .
+
+    $défaut  réduction par utilisation de la règle 5 (listinstr)
+
+
+état 16
+
+    6 statement: instr . NEWLINE
+
+    NEWLINE  décalage et aller à l'état 34
+
+
+état 17
+
+    9 instr: declaration .
+
+    $défaut  réduction par utilisation de la règle 9 (instr)
+
+
+état 18
+
+   10 instr: affectation .
+
+    $défaut  réduction par utilisation de la règle 10 (instr)
+
+
+état 19
+
+   11 instr: lecture .
+
+    $défaut  réduction par utilisation de la règle 11 (instr)
+
+
+état 20
+
+   12 instr: ecriture .
+
+    $défaut  réduction par utilisation de la règle 12 (instr)
+
+
+état 21
+
+   13 instr: boucle .
+
+    $défaut  réduction par utilisation de la règle 13 (instr)
+
+
+état 22
+
+    8 statement: error NEWLINE .
+
+    $défaut  réduction par utilisation de la règle 8 (statement)
+
+
+état 23
+
+   14 declaration: INT_KW ID .
+
+    $défaut  réduction par utilisation de la règle 14 (declaration)
+
+
+état 24
+
+   16 lecture: READ_KW LPAREN . ID RPAREN
+
+    ID  décalage et aller à l'état 35
+
+
+état 25
+
+   27 expr: ID .
+
+    $défaut  réduction par utilisation de la règle 27 (expr)
+
+
+état 26
+
+   28 expr: NUM .
+
+    $défaut  réduction par utilisation de la règle 28 (expr)
+
+
+état 27
+
+   25 expr: MINUS . expr
+
+    ID      décalage et aller à l'état 25
+    NUM     décalage et aller à l'état 26
+    MINUS   décalage et aller à l'état 27
+    LPAREN  décalage et aller à l'état 28
+
+    expr  aller à l'état 36
+
+
+état 28
+
+   26 expr: LPAREN . expr RPAREN
+
+    ID      décalage et aller à l'état 25
+    NUM     décalage et aller à l'état 26
+    MINUS   décalage et aller à l'état 27
+    LPAREN  décalage et aller à l'état 28
+
+    expr  aller à l'état 37
+
+
+état 29
+
+   17 ecriture: WRITE_KW expr .
+   19 expr: expr . PLUS expr
+   20     | expr . MINUS expr
+   21     | expr . MUL expr
+   22     | expr . DIV expr
+   23     | expr . MOD expr
+   24     | expr . POW expr
+
+    PLUS   décalage et aller à l'état 38
+    MINUS  décalage et aller à l'état 39
+    MUL    décalage et aller à l'état 40
+    DIV    décalage et aller à l'état 41
+    MOD    décalage et aller à l'état 42
+    POW    décalage et aller à l'état 43
+
+    $défaut  réduction par utilisation de la règle 17 (ecriture)
+
+
+état 30
+
+   18 boucle: WHILE_KW LPAREN . cond RPAREN DO_KW NEWLINE listinstr OD_KW
+
+    ID      décalage et aller à l'état 25
+    NUM     décalage et aller à l'état 26
+    MINUS   décalage et aller à l'état 27
+    LPAREN  décalage et aller à l'état 28
+
+    expr  aller à l'état 44
+    cond  aller à l'état 45
+
+
+état 31
+
+   15 affectation: ID ASSIGN . expr
+
+    ID      décalage et aller à l'état 25
+    NUM     décalage et aller à l'état 26
+    MINUS   décalage et aller à l'état 27
+    LPAREN  décalage et aller à l'état 28
+
+    expr  aller à l'état 46
+
+
+état 32
+
+    1 program: optional_newlines BEGIN_KW NEWLINE listinstr END_KW . optional_newlines
+
+    $défaut  réduction par utilisation de la règle 2 (optional_newlines)
+
+    optional_newlines  aller à l'état 47
+
+
+état 33
+
+    4 listinstr: listinstr statement .
+
+    $défaut  réduction par utilisation de la règle 4 (listinstr)
+
+
+état 34
+
+    6 statement: instr NEWLINE .
+
+    $défaut  réduction par utilisation de la règle 6 (statement)
+
+
+état 35
+
+   16 lecture: READ_KW LPAREN ID . RPAREN
+
+    RPAREN  décalage et aller à l'état 48
+
+
+état 36
+
+   19 expr: expr . PLUS expr
+   20     | expr . MINUS expr
+   21     | expr . MUL expr
+   22     | expr . DIV expr
+   23     | expr . MOD expr
+   24     | expr . POW expr
+   25     | MINUS expr .
+
+    $défaut  réduction par utilisation de la règle 25 (expr)
+
+
+état 37
+
+   19 expr: expr . PLUS expr
+   20     | expr . MINUS expr
+   21     | expr . MUL expr
+   22     | expr . DIV expr
+   23     | expr . MOD expr
+   24     | expr . POW expr
+   26     | LPAREN expr . RPAREN
+
+    PLUS    décalage et aller à l'état 38
+    MINUS   décalage et aller à l'état 39
+    MUL     décalage et aller à l'état 40
+    DIV     décalage et aller à l'état 41
+    MOD     décalage et aller à l'état 42
+    POW     décalage et aller à l'état 43
+    RPAREN  décalage et aller à l'état 49
+
+
+état 38
+
+   19 expr: expr PLUS . expr
+
+    ID      décalage et aller à l'état 25
+    NUM     décalage et aller à l'état 26
+    MINUS   décalage et aller à l'état 27
+    LPAREN  décalage et aller à l'état 28
+
+    expr  aller à l'état 50
+
+
+état 39
+
+   20 expr: expr MINUS . expr
+
+    ID      décalage et aller à l'état 25
+    NUM     décalage et aller à l'état 26
+    MINUS   décalage et aller à l'état 27
+    LPAREN  décalage et aller à l'état 28
+
+    expr  aller à l'état 51
+
+
+état 40
+
+   21 expr: expr MUL . expr
+
+    ID      décalage et aller à l'état 25
+    NUM     décalage et aller à l'état 26
+    MINUS   décalage et aller à l'état 27
+    LPAREN  décalage et aller à l'état 28
+
+    expr  aller à l'état 52
+
+
+état 41
+
+   22 expr: expr DIV . expr
+
+    ID      décalage et aller à l'état 25
+    NUM     décalage et aller à l'état 26
+    MINUS   décalage et aller à l'état 27
+    LPAREN  décalage et aller à l'état 28
+
+    expr  aller à l'état 53
+
+
+état 42
+
+   23 expr: expr MOD . expr
+
+    ID      décalage et aller à l'état 25
+    NUM     décalage et aller à l'état 26
+    MINUS   décalage et aller à l'état 27
+    LPAREN  décalage et aller à l'état 28
+
+    expr  aller à l'état 54
+
+
+état 43
+
+   24 expr: expr POW . expr
+
+    ID      décalage et aller à l'état 25
+    NUM     décalage et aller à l'état 26
+    MINUS   décalage et aller à l'état 27
+    LPAREN  décalage et aller à l'état 28
+
+    expr  aller à l'état 55
+
+
+état 44
+
+   19 expr: expr . PLUS expr
+   20     | expr . MINUS expr
+   21     | expr . MUL expr
+   22     | expr . DIV expr
+   23     | expr . MOD expr
+   24     | expr . POW expr
+   29 cond: expr . condsymb expr
+
+    PLUS       décalage et aller à l'état 38
+    MINUS      décalage et aller à l'état 39
+    MUL        décalage et aller à l'état 40
+    DIV        décalage et aller à l'état 41
+    MOD        décalage et aller à l'état 42
+    POW        décalage et aller à l'état 43
+    GT         décalage et aller à l'état 56
+    LT         décalage et aller à l'état 57
+    GE         décalage et aller à l'état 58
+    LE         décalage et aller à l'état 59
+    EQ         décalage et aller à l'état 60
+    NE         décalage et aller à l'état 61
+    STRICT_EQ  décalage et aller à l'état 62
+
+    condsymb  aller à l'état 63
+
+
+état 45
+
+   18 boucle: WHILE_KW LPAREN cond . RPAREN DO_KW NEWLINE listinstr OD_KW
+
+    RPAREN  décalage et aller à l'état 64
+
+
+état 46
+
+   15 affectation: ID ASSIGN expr .
+   19 expr: expr . PLUS expr
+   20     | expr . MINUS expr
+   21     | expr . MUL expr
+   22     | expr . DIV expr
+   23     | expr . MOD expr
+   24     | expr . POW expr
+
+    PLUS   décalage et aller à l'état 38
+    MINUS  décalage et aller à l'état 39
+    MUL    décalage et aller à l'état 40
+    DIV    décalage et aller à l'état 41
+    MOD    décalage et aller à l'état 42
+    POW    décalage et aller à l'état 43
+
+    $défaut  réduction par utilisation de la règle 15 (affectation)
+
+
+état 47
+
+    1 program: optional_newlines BEGIN_KW NEWLINE listinstr END_KW optional_newlines .
+    3 optional_newlines: optional_newlines . NEWLINE
+
+    NEWLINE  décalage et aller à l'état 5
+
+    $défaut  réduction par utilisation de la règle 1 (program)
+
+
+état 48
+
+   16 lecture: READ_KW LPAREN ID RPAREN .
+
+    $défaut  réduction par utilisation de la règle 16 (lecture)
+
+
+état 49
+
+   26 expr: LPAREN expr RPAREN .
+
+    $défaut  réduction par utilisation de la règle 26 (expr)
+
+
+état 50
+
+   19 expr: expr . PLUS expr
+   19     | expr PLUS expr .
+   20     | expr . MINUS expr
+   21     | expr . MUL expr
+   22     | expr . DIV expr
+   23     | expr . MOD expr
+   24     | expr . POW expr
+
+    MUL  décalage et aller à l'état 40
+    DIV  décalage et aller à l'état 41
+    MOD  décalage et aller à l'état 42
+    POW  décalage et aller à l'état 43
+
+    $défaut  réduction par utilisation de la règle 19 (expr)
+
+
+état 51
+
+   19 expr: expr . PLUS expr
+   20     | expr . MINUS expr
+   20     | expr MINUS expr .
+   21     | expr . MUL expr
+   22     | expr . DIV expr
+   23     | expr . MOD expr
+   24     | expr . POW expr
+
+    MUL  décalage et aller à l'état 40
+    DIV  décalage et aller à l'état 41
+    MOD  décalage et aller à l'état 42
+    POW  décalage et aller à l'état 43
+
+    $défaut  réduction par utilisation de la règle 20 (expr)
+
+
+état 52
+
+   19 expr: expr . PLUS expr
+   20     | expr . MINUS expr
+   21     | expr . MUL expr
+   21     | expr MUL expr .
+   22     | expr . DIV expr
+   23     | expr . MOD expr
+   24     | expr . POW expr
+
+    POW  décalage et aller à l'état 43
+
+    $défaut  réduction par utilisation de la règle 21 (expr)
+
+
+état 53
+
+   19 expr: expr . PLUS expr
+   20     | expr . MINUS expr
+   21     | expr . MUL expr
+   22     | expr . DIV expr
+   22     | expr DIV expr .
+   23     | expr . MOD expr
+   24     | expr . POW expr
+
+    POW  décalage et aller à l'état 43
+
+    $défaut  réduction par utilisation de la règle 22 (expr)
+
+
+état 54
+
+   19 expr: expr . PLUS expr
+   20     | expr . MINUS expr
+   21     | expr . MUL expr
+   22     | expr . DIV expr
+   23     | expr . MOD expr
+   23     | expr MOD expr .
+   24     | expr . POW expr
+
+    POW  décalage et aller à l'état 43
+
+    $défaut  réduction par utilisation de la règle 23 (expr)
+
+
+état 55
+
+   19 expr: expr . PLUS expr
+   20     | expr . MINUS expr
+   21     | expr . MUL expr
+   22     | expr . DIV expr
+   23     | expr . MOD expr
+   24     | expr . POW expr
+   24     | expr POW expr .
+
+    POW  décalage et aller à l'état 43
+
+    $défaut  réduction par utilisation de la règle 24 (expr)
+
+
+état 56
+
+   30 condsymb: GT .
+
+    $défaut  réduction par utilisation de la règle 30 (condsymb)
+
+
+état 57
+
+   31 condsymb: LT .
+
+    $défaut  réduction par utilisation de la règle 31 (condsymb)
+
+
+état 58
+
+   32 condsymb: GE .
+
+    $défaut  réduction par utilisation de la règle 32 (condsymb)
+
+
+état 59
+
+   33 condsymb: LE .
+
+    $défaut  réduction par utilisation de la règle 33 (condsymb)
+
+
+état 60
+
+   34 condsymb: EQ .
+
+    $défaut  réduction par utilisation de la règle 34 (condsymb)
+
+
+état 61
+
+   35 condsymb: NE .
+
+    $défaut  réduction par utilisation de la règle 35 (condsymb)
+
+
+état 62
+
+   36 condsymb: STRICT_EQ .
+
+    $défaut  réduction par utilisation de la règle 36 (condsymb)
+
+
+état 63
+
+   29 cond: expr condsymb . expr
+
+    ID      décalage et aller à l'état 25
+    NUM     décalage et aller à l'état 26
+    MINUS   décalage et aller à l'état 27
+    LPAREN  décalage et aller à l'état 28
+
+    expr  aller à l'état 65
+
+
+état 64
+
+   18 boucle: WHILE_KW LPAREN cond RPAREN . DO_KW NEWLINE listinstr OD_KW
+
+    DO_KW  décalage et aller à l'état 66
+
+
+état 65
+
+   19 expr: expr . PLUS expr
+   20     | expr . MINUS expr
+   21     | expr . MUL expr
+   22     | expr . DIV expr
+   23     | expr . MOD expr
+   24     | expr . POW expr
+   29 cond: expr condsymb expr .
+
+    PLUS   décalage et aller à l'état 38
+    MINUS  décalage et aller à l'état 39
+    MUL    décalage et aller à l'état 40
+    DIV    décalage et aller à l'état 41
+    MOD    décalage et aller à l'état 42
+    POW    décalage et aller à l'état 43
+
+    $défaut  réduction par utilisation de la règle 29 (cond)
+
+
+état 66
+
+   18 boucle: WHILE_KW LPAREN cond RPAREN DO_KW . NEWLINE listinstr OD_KW
+
+    NEWLINE  décalage et aller à l'état 67
+
+
+état 67
+
+   18 boucle: WHILE_KW LPAREN cond RPAREN DO_KW NEWLINE . listinstr OD_KW
+
+    error     décalage et aller à l'état 7
+    INT_KW    décalage et aller à l'état 8
+    READ_KW   décalage et aller à l'état 9
+    WRITE_KW  décalage et aller à l'état 10
+    WHILE_KW  décalage et aller à l'état 11
+    ID        décalage et aller à l'état 12
+    NEWLINE   décalage et aller à l'état 13
+
+    listinstr    aller à l'état 68
+    statement    aller à l'état 15
+    instr        aller à l'état 16
+    declaration  aller à l'état 17
+    affectation  aller à l'état 18
+    lecture      aller à l'état 19
+    ecriture     aller à l'état 20
+    boucle       aller à l'état 21
+
+
+état 68
+
+    4 listinstr: listinstr . statement
+   18 boucle: WHILE_KW LPAREN cond RPAREN DO_KW NEWLINE listinstr . OD_KW
+
+    error     décalage et aller à l'état 7
+    INT_KW    décalage et aller à l'état 8
+    READ_KW   décalage et aller à l'état 9
+    WRITE_KW  décalage et aller à l'état 10
+    WHILE_KW  décalage et aller à l'état 11
+    OD_KW     décalage et aller à l'état 69
+    ID        décalage et aller à l'état 12
+    NEWLINE   décalage et aller à l'état 13
+
+    statement    aller à l'état 33
+    instr        aller à l'état 16
+    declaration  aller à l'état 17
+    affectation  aller à l'état 18
+    lecture      aller à l'état 19
+    ecriture     aller à l'état 20
+    boucle       aller à l'état 21
+
+
+état 69
+
+   18 boucle: WHILE_KW LPAREN cond RPAREN DO_KW NEWLINE listinstr OD_KW .
+
+    $défaut  réduction par utilisation de la règle 18 (boucle)

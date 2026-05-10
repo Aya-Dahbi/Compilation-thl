@@ -1,118 +1,177 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-extern int yylex(void);
 extern int yylineno;
 extern char* yytext;
+
+int yylex();
+
+int nb_erreurs = 0;
 
 void yyerror(const char *s);
 %}
 
-%union {
-    int num;
-    char* str;
-}
+/* ================= CONFIGURATION ================= */
+%error-verbose
 
-%token BEGIN_KW END_KW INT_KW WRITE_KW READ_KW WHILE_KW DO_KW OD_KW
-%token ASSIGN MINUS TIMES DIV MOD POW
-%token GTE LTE NEQ EQ GT LT
-%token LPAREN RPAREN
+/* ================= TOKENS ================= */
+%token BEGIN_KW "begin"
+%token END_KW "end"
+%token INT_KW "int"
+%token READ_KW "read"
+%token WRITE_KW "write"
+%token WHILE_KW "while"
+%token DO_KW "do"
+%token OD_KW "od"
 
-%token <str> ID
-%token <num> NUM
+%token ID "identifiant"
+%token NUM "nombre"
+%token ASSIGN ":="
+%token PLUS "+"
+%token MINUS "-"
+%token MUL "*"
+%token DIV "/"
+%token MOD "%"
+%token POW "^"
+%token GT ">"
+%token LT "<"
+%token GE ">="
+%token LE "<="
+%token EQ "=="
+%token NE "!="
+%token STRICT_EQ "==="
+%token LPAREN "("
+%token RPAREN ")"
+%token NEWLINE "fin de ligne"
 
-%left MINUS
-%left TIMES DIV MOD
+/* ================= PRIORITES ================= */
+%left PLUS MINUS
+%left MUL DIV MOD
 %right POW
-
-%start program
+%left UMINUS
 
 %%
 
+/* ================= PROGRAM ================= */
+
 program:
-    BEGIN_KW listinstr END_KW
-    | error END_KW
-    {
-        fprintf(stderr, "[ERREUR] Ligne %d : 'begin' manquant\n", yylineno);
-        yyerrok;
-    }
-    | BEGIN_KW listinstr
-    {
-        fprintf(stderr, "[ERREUR] Ligne %d : 'end' manquant\n", yylineno);
-        yyerrok;
-    }
-    ;
+      optional_newlines BEGIN_KW NEWLINE listinstr END_KW optional_newlines
+      {
+          if(nb_erreurs == 0)
+              printf("SUCCES : programme syntaxiquement correct.\n");
+          else
+              printf("ECHEC : %d erreur(s) detectee(s).\n", nb_erreurs);
+      }
+;
+
+optional_newlines:
+      /* vide */
+    | optional_newlines NEWLINE
+;
+
+/* ================= LISTE D'INSTRUCTIONS ================= */
 
 listinstr:
-    instr listinstr
-    | instr
-    | error listinstr
-    {
-        fprintf(stderr, "[ERREUR] Ligne %d : instruction invalide\n", yylineno);
-        yyerrok;
-    }
-    ;
+      listinstr statement
+    | statement
+;
+
+statement:
+      instr NEWLINE
+    | NEWLINE  /* Lignes vides ignorees */
+    | error NEWLINE 
+      { 
+          yyerrok; 
+      }
+;
+
+/* ================= INSTRUCTIONS ================= */
 
 instr:
-    INT_KW ID
-    | ID ASSIGN expr
-    | ID error expr
-    {
-        fprintf(stderr, "[ERREUR] Ligne %d : ':=' manquant apres '%s'\n", yylineno, $1);
-        yyerrok;
-    }
-    | WRITE_KW expr
-    | READ_KW LPAREN ID RPAREN
-    | READ_KW ID
-    {
-        fprintf(stderr, "[ERREUR] Ligne %d : parentheses manquantes → ecrivez read(%s)\n", yylineno, $2);
-        yyerrok;
-    }
-    | WHILE_KW LPAREN cond RPAREN DO_KW listinstr OD_KW
-    | WHILE_KW LPAREN cond RPAREN listinstr OD_KW
-    {
-        fprintf(stderr, "[ERREUR] Ligne %d : 'do' manquant apres la condition\n", yylineno);
-        yyerrok;
-    }
-    | WHILE_KW LPAREN cond RPAREN DO_KW listinstr
-    {
-        fprintf(stderr, "[ERREUR] Ligne %d : 'od' manquant\n", yylineno);
-        yyerrok;
-    }
-    ;
+      declaration
+    | affectation
+    | lecture
+    | ecriture
+    | boucle
+;
+
+/* ================= DECLARATION ================= */
+
+declaration:
+      INT_KW ID
+;
+
+/* ================= AFFECTATION ================= */
+
+affectation:
+      ID ASSIGN expr
+;
+
+/* ================= LECTURE ================= */
+
+lecture:
+      READ_KW LPAREN ID RPAREN
+;
+
+/* ================= ECRITURE ================= */
+
+ecriture:
+      WRITE_KW expr
+;
+
+/* ================= BOUCLE ================= */
+
+boucle:
+      WHILE_KW LPAREN cond RPAREN DO_KW NEWLINE listinstr OD_KW
+;
+
+/* ================= EXPRESSIONS ================= */
 
 expr:
-    expr MINUS expr
-    | expr TIMES expr
+      expr PLUS expr
+    | expr MINUS expr
+    | expr MUL expr
     | expr DIV expr
     | expr MOD expr
     | expr POW expr
+    | MINUS expr %prec UMINUS
+    | LPAREN expr RPAREN
     | ID
     | NUM
-    | LPAREN expr RPAREN
-    ;
+;
+
+/* ================= CONDITIONS ================= */
 
 cond:
-    expr condsymb expr
-    ;
+      expr condsymb expr
+;
 
 condsymb:
-    GT | LT | GTE | LTE | NEQ | EQ
-    ;
+      GT
+    | LT
+    | GE
+    | LE
+    | EQ
+    | NE
+    | STRICT_EQ
+;
 
 %%
 
-void yyerror(const char *s) {
-    fprintf(stderr, "[ERREUR] Ligne %d : %s (proche de '%s')\n",
-            yylineno, s, yytext);
+/* ================= ERREURS ================= */
+
+void yyerror(const char *s)
+{
+    fprintf(stderr, "[ERREUR] Ligne %d : %s\n", yylineno, s);
+    nb_erreurs++;
 }
 
-int main(void) {
-    if (yyparse() == 0) {
-        printf("SUCCES : programme valide.\n");
-    } else {
-        printf("ECHEC : programme invalide.\n");
-    }
+/* ================= MAIN ================= */
+
+int main()
+{
+    yyparse();
     return 0;
 }
