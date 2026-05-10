@@ -13,10 +13,8 @@ int nb_erreurs = 0;
 void yyerror(const char *s);
 %}
 
-/* ================= CONFIGURATION ================= */
 %error-verbose
 
-/* ================= TOKENS ================= */
 %token BEGIN_KW "begin"
 %token END_KW "end"
 %token INT_KW "int"
@@ -46,15 +44,12 @@ void yyerror(const char *s);
 %token RPAREN ")"
 %token NEWLINE "fin de ligne"
 
-/* ================= PRIORITES ================= */
 %left PLUS MINUS
 %left MUL DIV MOD
 %right POW
 %left UMINUS
 
 %%
-
-/* ================= PROGRAM ================= */
 
 program:
       optional_newlines BEGIN_KW NEWLINE listinstr END_KW optional_newlines
@@ -71,8 +66,6 @@ optional_newlines:
     | optional_newlines NEWLINE
 ;
 
-/* ================= LISTE D'INSTRUCTIONS ================= */
-
 listinstr:
       listinstr statement
     | statement
@@ -87,8 +80,6 @@ statement:
       }
 ;
 
-/* ================= INSTRUCTIONS ================= */
-
 instr:
       declaration
     | affectation
@@ -97,37 +88,24 @@ instr:
     | boucle
 ;
 
-/* ================= DECLARATION ================= */
-
 declaration:
       INT_KW ID
 ;
-
-/* ================= AFFECTATION ================= */
 
 affectation:
       ID ASSIGN expr
 ;
 
-/* ================= LECTURE ================= */
-
 lecture:
       READ_KW LPAREN ID RPAREN
 ;
-
-/* ================= ECRITURE ================= */
-
 ecriture:
       WRITE_KW expr
 ;
 
-/* ================= BOUCLE ================= */
-
 boucle:
       WHILE_KW LPAREN cond RPAREN DO_KW NEWLINE listinstr OD_KW
 ;
-
-/* ================= EXPRESSIONS ================= */
 
 expr:
       expr PLUS expr
@@ -141,9 +119,6 @@ expr:
     | ID
     | NUM
 ;
-
-/* ================= CONDITIONS ================= */
-
 cond:
       expr condsymb expr
 ;
@@ -160,15 +135,11 @@ condsymb:
 
 %%
 
-/* ================= ERREURS ================= */
-
 void yyerror(const char *s)
 {
     fprintf(stderr, "[ERREUR] Ligne %d : %s\n", yylineno, s);
     nb_erreurs++;
 }
-
-/* ================= MAIN ================= */
 
 int main()
 {
