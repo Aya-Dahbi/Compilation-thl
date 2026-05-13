@@ -24,6 +24,16 @@ void yyerror(const char *s);
 %token DO_KW "do"
 %token OD_KW "od"
 
+<<<<<<< Updated upstream
+=======
+%token IF_KW "if"
+%token THEN_KW "then"
+%token ELSE_KW "else"
+%token FI_KW "fi"
+%token FOR_KW "for"
+%token TO_KW "to"
+
+>>>>>>> Stashed changes
 %token ID "identifiant"
 %token NUM "nombre"
 %token ASSIGN ":="
@@ -107,6 +117,23 @@ boucle:
       WHILE_KW LPAREN cond RPAREN DO_KW NEWLINE listinstr OD_KW
 ;
 
+<<<<<<< Updated upstream
+=======
+
+boucle_for:
+      /* Syntaxe classique : for i := 1 to 10 do ... od */
+      FOR_KW ID ASSIGN expr TO_KW expr DO_KW NEWLINE listinstr OD_KW
+;
+
+conditionnelle:
+      /* Structure classique avec fin specifique 'fi' */
+      IF_KW LPAREN cond RPAREN THEN_KW NEWLINE listinstr FI_KW
+      /* Structure avec Else */
+    | IF_KW LPAREN cond RPAREN THEN_KW NEWLINE listinstr ELSE_KW NEWLINE listinstr FI_KW
+;
+
+
+>>>>>>> Stashed changes
 expr:
       expr PLUS expr
     | expr MINUS expr
